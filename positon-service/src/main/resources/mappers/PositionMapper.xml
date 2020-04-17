@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhaoya.senior3.dao.PositionDao">
+
+	<resultMap type="Position" id="poMapper">
+		<id property="pid" column="pid" />
+		<result column="pname" property="pname" />
+		<result column="salary" property="salary" />
+		<result column="cid" property="cid" />
+		<result column="pdate" property="pdate" />
+		<result column="prequirement" property="prequirement" />
+		<result column="peducation" property="peducation" />
+		<result column="pwelfare" property="pwelfare" />
+
+		<association property="company" column="cid"
+			select="selectCompanyByCid" />
+	</resultMap>
+	<resultMap type="Company" id="comMapper">
+		<id column="cid" property="cid" />
+		<result column="cname" property="cname" />
+		<result column="cphone" property="cphone" />
+		<result column="cphone" property="cphone" />
+		<result column="arear" property="arear" />
+		<result column="csize" property="csize" />
+		<result column="ctype" property="ctype" />
+	</resultMap>
+	<select id="list" resultMap="poMapper">
+		SELECT p.*,c.* from t_position p LEFT JOIN t_company c on p.cid= c.cid
+		<where>
+			<if test="pname!=null and pname!=''">
+				and p.pname like concat('%',#{pname},'%')
+			</if>
+			<if test="cname!=null and cname!=''">
+				and c.cname like concat('%',#{cname},'%')
+			</if>
+			<if test="null != start and start !=''">
+				and p.salary >='${start}'
+			</if>
+			<if test="null != end and end !=''">
+				and p.salary &lt;='${end}'
+			</if>
+		</where>
+	</select>
+
+	<select id="selectCompanyByCid" resultMap="comMapper">
+		select * from
+		t_company
+		where cid = #{value}
+	</select>
+
+	<select id="getCompanyList" resultMap="comMapper">
+		select * from t_company
+	</select>
+
+	<insert id="addPosition">
+		insert into t_position set
+		pid=#{pid},pname=#{pname},salary=#{salary},cid=#{cid},pdate=#{pdate},prequirement=#{prequirement},peducation=#{peducation},pwelfare=#{pwelfare}
+	</insert>
+	
+	<select id="look" resultMap="poMapper">
+	   select * from t_position where pid =#{pid}
+	</select>
+	
+	<select id="clook" resultMap="comMapper">
+	   select * from t_company where cid =#{cid}
+	</select>
+</mapper>
